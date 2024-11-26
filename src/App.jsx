@@ -6,6 +6,10 @@ const App = () => {
   const [imageSrc, setImageSrc] = useState(null);
   const [result, setResult] = useState({ blue: 0, pink: 0 });
 
+  const videoConstraints = {
+    facingMode: "environment", // Rear-facing camera
+  };
+
   const capture = () => {
     const imageSrc = webcamRef.current.getScreenshot();
     setImageSrc(imageSrc);
@@ -64,6 +68,7 @@ const App = () => {
             ref={webcamRef}
             screenshotFormat="image/jpeg"
             className="w-full max-w-md rounded-lg border-2 border-gray-300"
+            videoConstraints={videoConstraints} // Rear-facing camera specified here
           />
           <button
             onClick={capture}
@@ -98,4 +103,3 @@ const App = () => {
 };
 
 export default App;
-
