@@ -30,17 +30,38 @@ const App = () => {
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const pixels = imageData.data;
 
+      let totalBrightness = 0;
       let totalPixels = 0;
       let blueCount = 0;
       let pinkCount = 0;
 
+      // Calculate average brightness
       for (let i = 0; i < pixels.length; i += 4) {
         const r = pixels[i];
         const g = pixels[i + 1];
         const b = pixels[i + 2];
 
+        const brightness = 0.299 * r + 0.587 * g + 0.114 * b; // Standard grayscale conversion
+        totalBrightness += brightness;
         totalPixels++;
+      }
 
+      const avgBrightness = totalBrightness / totalPixels;
+
+      // Adjust pixel values based on average brightness
+      const brightnessAdjustmentFactor = 128 / avgBrightness; // Normalize to mid-brightness level
+
+      for (let i = 0; i < pixels.length; i += 4) {
+        let r = pixels[i] * brightnessAdjustmentFactor;
+        let g = pixels[i + 1] * brightnessAdjustmentFactor;
+        let b = pixels[i + 2] * brightnessAdjustmentFactor;
+
+        // Clamp values to [0, 255]
+        r = Math.min(255, Math.max(0, r));
+        g = Math.min(255, Math.max(0, g));
+        b = Math.min(255, Math.max(0, b));
+
+        // Color detection logic
         if (b > 128 && b > r && b > g) {
           blueCount++;
         }
@@ -87,8 +108,12 @@ const App = () => {
             className="w-full max-w-md rounded-lg border-2 border-gray-300"
           />
           <div className="mt-4 p-4 bg-white shadow-lg rounded-lg border-2 border-gray-100">
-            <p className="text-lg font-semibold text-blue-500">Corrupted: {result.blue}%</p>
-            <p className="text-lg font-semibold text-pink-500">Good: {result.pink}%</p>
+            <p className="text-lg font-semibold text-blue-500">
+              Corrupted: {result.blue}%
+            </p>
+            <p className="text-lg font-semibold text-pink-500">
+              Good: {result.pink}%
+            </p>
           </div>
           <button
             onClick={() => setImageSrc(null)}
